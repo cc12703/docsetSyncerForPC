@@ -1,0 +1,58 @@
+{
+  "name": "docsetsyncer",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "vue-cli-service electron:build",
+    "serve": "vue-cli-service electron:serve",
+    "debug": "vue-cli-service electron:serve --mode debug",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps"
+  },
+  "main": "background.js",
+  "dependencies": {
+    "axios": "0.19.2",
+    "compressing": "1.5.1",
+    "core-js": "3.6.5",
+    "electron-log": "4.2.2",
+    "electron-store": "6.0.0",
+    "element-ui": "2.13.2",
+    "fs-extra": "9.0.1",
+    "reflect-metadata": "0.1.13",
+    "vue": "2.6.11",
+    "vue-class-component": "7.2.3",
+    "vue-property-decorator": "8.4.2",
+    "vue-router": "3.2.0",
+    "vue-wechat-title": "2.0.7"
+  },
+  "devDependencies": {
+    "@types/electron-devtools-installer": "2.2.0",
+    "@types/electron-store": "3.2.0",
+    "@types/fs-extra": "9.0.1",
+    "@types/node": "12.12.6",
+    "@typescript-eslint/eslint-plugin": "2.33.0",
+    "@typescript-eslint/parser": "2.33.0",
+    "@vue/cli-plugin-babel": "4.4.0",
+    "@vue/cli-plugin-eslint": "4.4.0",
+    "@vue/cli-plugin-router": "4.4.0",
+    "@vue/cli-plugin-typescript": "4.4.0",
+    "@vue/cli-service": "4.4.0",
+    "@vue/eslint-config-prettier": "6.0.0",
+    "@vue/eslint-config-typescript": "5.0.2",
+    "electron": "9.0.0",
+    "electron-devtools-installer": "3.1.0",
+    "eslint": "6.7.2",
+    "eslint-plugin-prettier": "3.1.3",
+    "eslint-plugin-vue": "6.2.2",
+    "node-sass": "4.14.1",
+    "sass-loader": "9.0.2",
+    "stylus": "0.54.7",
+    "stylus-loader": "3.0.2",
+    "typescript": "3.9.3",
+    "vue-cli-plugin-electron-builder": "2.0.0-rc.4",
+    "vue-template-compiler": "2.6.11"
+  },
+  "nodeSassConfig": {
+    "binarySite": "https://npm.taobao.org/mirrors/node-sass"
+  }
+}
