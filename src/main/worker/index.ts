@@ -6,11 +6,13 @@ import { app, ipcMain } from 'electron'
 import log from 'electron-log'
 import compressing from 'compressing'
 
-import * as serv from './server'
 import * as store from '@/main/store'
 import * as constant from '@/common/info/const'
-import { SyncConfigInfo } from '@/common/info/config'
+import * as NetUtil from '@/common/utils/net'
+import * as api from '@/common/api'
+import { SyncConfigInfo, ToolConfigInfo } from '@/common/info/config'
 import { PkgLocalInfo, PkgRemoteInfo, SyncPkgResultInfo } from '@/common/info/data'
+
 
 
 
@@ -57,7 +59,7 @@ function isDownload(lPkgs: PkgLocalInfo[], rPkg: PkgRemoteInfo, cfg: SyncConfigI
 
 async function download(rPkg: PkgRemoteInfo): Promise<string> {
     const fileName = path.join(DLFILE_PATH, `${rPkg.name}-${rPkg.lastVer}.docset.tgz`)
-    return serv.downloadFile(rPkg.lastUrl, fileName).then(() => fileName)
+    return NetUtil.downloadFile(rPkg.lastUrl, fileName).then(() => fileName)
 }
 
 async function uncompress(pkgFileName: string, lPkg: PkgLocalInfo, cfg: SyncConfigInfo): Promise<void> {
@@ -72,7 +74,7 @@ async function syncPkgs(): Promise<boolean> {
 
         const cfg: SyncConfigInfo = store.get(constant.SKEY_CFG_SYNC)    
         const lPkgs = store.getWithDef(constant.SKEY_PKG_LOCAL, [])
-        const rPkgs = await serv.getPkgs()
+        const rPkgs = await api.getPkgs(cfg.githubLoginName, cfg.repoPrefixName)
         log.info(`local pkgs num ${lPkgs.length}`)
         log.info(`remote pkgs num ${rPkgs.length}`)
         for (let rPkg of rPkgs) {
@@ -103,16 +105,20 @@ async function syncPkgs(): Promise<boolean> {
 
 function initConfig() {
     if(!store.has(constant.SKEY_CFG_SYNC)) {
-         const cfgFile = path.join(os.homedir(), constant.TOOL_CFG_FILENAME)
-         if(fs.existsSync(cfgFile)) {
-             const cfgData = fse.readJSONSync(cfgFile)
-             let cfgSync = new SyncConfigInfo()
-             cfgSync.githubLoginName = cfgData['github.name']
-             cfgSync.repoPrefixName = cfgData['tag.prefix.name']
-             cfgSync.docsetSavePath = cfgData['docset.save.path']
-             store.set(constant.SKEY_CFG_SYNC, cfgSync)
-         }
+        let cfgSync = new SyncConfigInfo()
+        const cfgFile = path.join(os.homedir(), constant.TOOL_CFG_FILENAME)
+        if(fs.existsSync(cfgFile)) {
+            const cfgData = fse.readJSONSync(cfgFile)
+            cfgSync.githubLoginName = cfgData['github.name']
+            cfgSync.repoPrefixName = cfgData['tag.prefix.name']
+            cfgSync.docsetSavePath = cfgData['docset.save.path']
+        }
+        store.set(constant.SKEY_CFG_SYNC, cfgSync)
     }
+    if(!store.has(constant.SKEY_CFG_TOOL)) {
+        store.set(constant.SKEY_CFG_TOOL, new ToolConfigInfo())
+    }
+
 }
 
 
@@ -129,6 +135,11 @@ ipcMain.handle('syncPkgs', async (event) => {
     return new SyncPkgResultInfo(isOK)
 })
 
+ipcMain.handle('setAutoStart', (event, val) => {
+    app.setLoginItemSettings({
+        openAtLogin: val
+    })
+})
 
 
 

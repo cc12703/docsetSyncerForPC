@@ -17,11 +17,19 @@ export default new VueRouter({
       }
     },
     {
-      path: '/Settings',
-      name: 'Settings',
-      component: () => import('@/render/views/Settings.vue'),
+      path: '/SyncSettings',
+      name: 'SyncSettings',
+      component: () => import('@/render/views/SyncSettings.vue'),
       meta: {
-        title: '设置'
+        title: '同步设置'
+      }
+    },
+    {
+      path: '/ToolSettings',
+      name: 'ToolSettings',
+      component: () => import('@/render/views/ToolSettings.vue'),
+      meta: {
+        title: '工具设置'
       }
     },
   ]

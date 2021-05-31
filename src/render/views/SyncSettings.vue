@@ -27,7 +27,7 @@
     import { SyncConfigInfo } from '@/common/info/config'
 
     @Component({})
-    export default class Settings extends Vue {
+    export default class SyncSettings extends Vue {
 
         private syncInfo = new SyncConfigInfo()
         

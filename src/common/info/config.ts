@@ -15,3 +15,10 @@ export class SyncConfigInfo {
     docsetSavePath = ''
 
 }
+
+
+export class ToolConfigInfo {
+
+    autoStart = true
+
+}

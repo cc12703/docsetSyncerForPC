@@ -6,10 +6,13 @@ import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import path from 'path'
 
 import * as worker from '@/main/worker'
+import * as store from '@/main/store'
+import * as constant from '@/common/info/const'
 
 import "reflect-metadata"
 
 import pkg from 'root/package.json'
+import { ToolConfigInfo } from "./common/info/config";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -143,7 +146,8 @@ if (isDevelopment) {
 }
 
 if(app.isPackaged) {
+  const cfg: ToolConfigInfo = store.get(constant.SKEY_CFG_TOOL)
   app.setLoginItemSettings({ 
-    openAtLogin: true
+    openAtLogin: cfg.autoStart
   })
 }

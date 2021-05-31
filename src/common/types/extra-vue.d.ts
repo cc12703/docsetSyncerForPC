@@ -6,6 +6,7 @@ declare module "vue/types/vue" {
 
   interface Vue {
     $store: typeof store
+    $bus: Vue
   }
 
 }
