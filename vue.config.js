@@ -15,6 +15,11 @@ module.exports = {
     pluginOptions: {
       electronBuilder: {
         preload: 'src/preload.ts',
+        chainWebpackMainProcess: config => {
+          config.resolve.alias
+            .set('@', resolve('src'))
+            .set('root', resolve('./'))
+        },
         builderOptions: {
           productName: 'docsetsyncer',
           appId: 'com.cc12703.app.docsetsyncer',

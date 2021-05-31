@@ -1,13 +1,15 @@
 "use strict";
 
 
-import { app, protocol, BrowserWindow, Tray, Menu } from "electron";
+import { app, protocol, BrowserWindow, Tray, Menu, dialog, nativeImage } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import path from 'path'
 
 import * as worker from '@/main/worker'
 
 import "reflect-metadata"
+
+import pkg from 'root/package.json'
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -23,6 +25,17 @@ protocol.registerSchemesAsPrivileged([
 
 function createContextMenu() {
   contextMenu = Menu.buildFromTemplate([
+    {
+      label: '关于',
+      click() {
+        dialog.showMessageBox({
+          title: pkg.name,
+          message: pkg.name,
+          icon: nativeImage.createFromPath(`${__static}/logo.png`),
+          detail: `Version: ${pkg.version}\nAuthor: Morris\nGithub: https://github.com/cc12703/docsetSyncerForPC`
+        })
+      }
+    },
     {
       role: 'quit',
       label: '退出'
