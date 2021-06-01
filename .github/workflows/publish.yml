@@ -1,0 +1,57 @@
+
+
+name: Build and Publish
+on: 
+  push:
+    tags:
+      - "v*.*.*"
+
+
+jobs:
+  build-and-publish:
+    runs-on: macos-10.15
+    steps:
+      - name: Prepare
+        uses: actions/setup-node@v2
+        with:
+            node-version: '12'
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build App
+        run: |
+          npm install
+          npm run build
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+            name: my-artifact
+            path: dist_electron/*.zip
+        
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: "dist_electron/**"
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: Release Document
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
+
+
+        
+
+
+
+
+        
+      
+        
