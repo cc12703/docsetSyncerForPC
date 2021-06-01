@@ -63,7 +63,7 @@
           api.getLastRelease('cc12703', 'docsetSyncerForPC')
               .then(relInfo => {
                   if(relInfo != null) {
-                      this.latestVersion = relInfo.tag_name
+                      this.latestVersion = relInfo.tag_name.replace('v', '')
                       this.latestUrl = relInfo.assets[0].browser_download_url
                   } 
               })
