@@ -4,6 +4,7 @@
 import { app, protocol, BrowserWindow, Tray, Menu, dialog, nativeImage } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import path from 'path'
+import log from 'electron-log'
 
 import * as worker from '@/main/worker'
 import * as store from '@/main/store'
@@ -118,6 +119,14 @@ app.on("ready", async () => {
   
   worker.init()
 
+  if(app.isPackaged) {
+    const cfg: ToolConfigInfo = store.get(constant.SKEY_CFG_TOOL)
+    log.info(cfg)
+    app.setLoginItemSettings({ 
+      openAtLogin: cfg.autoStart
+    })
+  }
+
   if (process.env.RUN_MODE === "debug") {
     worker.test()
   }
@@ -125,6 +134,8 @@ app.on("ready", async () => {
     createWindow()
     createTray()
   }
+
+
   
 });
 
@@ -145,9 +156,4 @@ if (isDevelopment) {
   }
 }
 
-if(app.isPackaged) {
-  const cfg: ToolConfigInfo = store.get(constant.SKEY_CFG_TOOL)
-  app.setLoginItemSettings({ 
-    openAtLogin: cfg.autoStart
-  })
-}
+
