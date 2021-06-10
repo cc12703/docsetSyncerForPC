@@ -5,6 +5,7 @@ import os from 'os'
 import { app, ipcMain } from 'electron'
 import log from 'electron-log'
 import compressing from 'compressing'
+import * as sio from "socket.io-client"
 
 import * as store from '@/main/store'
 import * as constant from '@/common/info/const'
@@ -68,13 +69,15 @@ async function uncompress(pkgFileName: string, lPkg: PkgLocalInfo, cfg: SyncConf
               .then(() => compressing.tgz.uncompress(pkgFileName, cfg.docsetSavePath))
 }
 
-async function syncPkgs(): Promise<boolean> {
+
+
+
+async function doSyncPkgsFromRemote(rPkgs: PkgRemoteInfo[]): Promise<boolean> {
     try {
-        log.info('sync pkgs is start')
+        log.info('sync pkgs from remote is start')
 
         const cfg: SyncConfigInfo = store.get(constant.SKEY_CFG_SYNC)    
         const lPkgs = store.getWithDef(constant.SKEY_PKG_LOCAL, [])
-        const rPkgs = await api.getPkgs(cfg.githubLoginName, cfg.repoPrefixName)
         log.info(`local pkgs num ${lPkgs.length}`)
         log.info(`remote pkgs num ${rPkgs.length}`)
         for (let rPkg of rPkgs) {
@@ -94,12 +97,33 @@ async function syncPkgs(): Promise<boolean> {
             store.set(constant.SKEY_PKG_LOCAL, lPkgs)
         }
         
-        log.info('sync pkgs is stop')
+        log.info('sync pkgs from remote is stop')
         return true
     } catch(error) {
-        log.error(`deal pkg fail ${error}`)
+        log.error(`sync pkgs from remote fail ${error}`)
         return false
     }
+}
+
+
+async function syncPkgs(): Promise<boolean> {
+    const cfg: SyncConfigInfo = store.get(constant.SKEY_CFG_SYNC)    
+    const rPkgs = await api.getPkgs(cfg.githubLoginName, cfg.repoPrefixName)
+    return doSyncPkgsFromRemote(rPkgs)
+}
+
+async function updatePkgs(uPkgs: NotifyerUpdateInfo[]): Promise<boolean> {
+    const rPkgs = uPkgs.map(item => new PkgRemoteInfo(item.repoName, item.lastVer, item.lastUrl))
+    return doSyncPkgsFromRemote(rPkgs)
+}
+
+
+function initAutoUpdate() {
+    const socket = sio.io('ws://notify.cc12703.com:3000')
+    socket.on('updateInfos', (data: NotifyerUpdateInfo[]) => {
+        log.info(`recv update info num ${data? data.length : 0}`)
+        updatePkgs(data)
+    })
 }
 
 
@@ -127,6 +151,7 @@ export function init() {
     const appDir = app.getPath('userData')
     log.info(`appDir ${appDir}`)
     initConfig()
+    initAutoUpdate()
 }
 
 

@@ -39,3 +39,10 @@ interface GitHubReleaseAssetInfo {
     browser_download_url: string
 
 }
+
+
+interface NotifyerUpdateInfo {
+    repoName: string,
+    lastVer: string,
+    lastUrl: string
+}

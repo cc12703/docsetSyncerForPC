@@ -45,6 +45,7 @@
                 this.syncDoing = false
                 if(result.isOK) {
                     this.$message.success('同步成功')
+                    this.refresh()
                 }
                 else {
                     this.$message.error('同步出错')
