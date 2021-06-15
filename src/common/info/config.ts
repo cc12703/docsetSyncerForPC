@@ -13,6 +13,7 @@ export class SyncConfigInfo {
     repoPrefixName = ''
 
     docsetSavePath = ''
+    docsetUpdateAddr = ''
 
 }
 

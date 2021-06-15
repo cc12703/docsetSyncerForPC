@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as fse from 'fs-extra'
 import path from 'path' 
 import os from 'os'
-import { app, ipcMain } from 'electron'
+import { app, ipcMain, Notification } from 'electron'
 import log from 'electron-log'
 import compressing from 'compressing'
 import * as sio from "socket.io-client"
@@ -113,13 +113,20 @@ async function syncPkgs(): Promise<boolean> {
 }
 
 async function updatePkgs(uPkgs: NotifyerUpdateInfo[]): Promise<boolean> {
+    const notify = new Notification({title: 'Update Docset', body: 'Auto Update Docset Pkgs'})
+
+    notify.show()
     const rPkgs = uPkgs.map(item => new PkgRemoteInfo(item.repoName, item.lastVer, item.lastUrl))
-    return doSyncPkgsFromRemote(rPkgs)
+    const result = await doSyncPkgsFromRemote(rPkgs)
+    notify.close()
+
+    return result
 }
 
 
 function initAutoUpdate() {
-    const socket = sio.io('ws://notify.cc12703.com:3000')
+    const cfg: SyncConfigInfo = store.get(constant.SKEY_CFG_SYNC)
+    const socket = sio.io(cfg.docsetUpdateAddr)
     socket.on('updateInfos', (data: NotifyerUpdateInfo[]) => {
         log.info(`recv update info num ${data? data.length : 0}`)
         updatePkgs(data)
@@ -136,6 +143,7 @@ function initConfig() {
             cfgSync.githubLoginName = cfgData['github.name']
             cfgSync.repoPrefixName = cfgData['tag.prefix.name']
             cfgSync.docsetSavePath = cfgData['docset.save.path']
+            cfgSync.docsetUpdateAddr = cfgData['docset.update.addr']
         }
         store.set(constant.SKEY_CFG_SYNC, cfgSync)
     }

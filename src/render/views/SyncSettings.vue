@@ -8,9 +8,13 @@
             <el-form-item label="仓库前缀名">
                 <el-input class="input" v-model="syncInfo.repoPrefixName" />
             </el-form-item>
-             <el-form-item label="docset保存目录">
+            <el-form-item label="docset保存目录">
                 <el-input class="input" v-model="syncInfo.docsetSavePath" />
             </el-form-item>
+            <el-form-item label="docset更新服务器地址">
+                <el-input class="input" v-model="syncInfo.docsetUpdateAddr" />
+            </el-form-item>
+
             <el-form-item>
                 <el-button class="button" @click="saveSyncInfo">保存</el-button>
             </el-form-item>
